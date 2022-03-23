@@ -1,23 +1,40 @@
 import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
+
+function* uiid_gen() {
+  let id = 0;
+
+  while (true) {
+    yield id;
+    id++
+  }
+}
 
 function App() {
+  const [value, setValue] = useState('');
+  const [tasks, setTasks] = useState([])
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  }
+
+  const handleKeyUp = (event) => {
+    if (event.key === 'Enter'){
+      setTasks([...tasks,
+              name: value
+              id: uiid_gen.next().value]);
+      setValue('');
+    }
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>todo</h1>
+      <input type="text" value={value}onChange={handleChange} onKeyUp={handleKeyUp}/>
+      <ul>
+        {tasks.map((item) => <li>{item}</li>)}
+      </ul>
     </div>
   );
 }
