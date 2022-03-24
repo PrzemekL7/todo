@@ -1,10 +1,12 @@
 import React from "react";
 import TaskItem from "./Taskitem";
 
-function TaskList({tasks, handleChangeStatus, handleDeleteTask}) {
+function TaskList({tasks, selection, handleChangeStatus, handleDeleteTask}) {
     return (
         <ul>
-            {tasks.map(({id, name, status}) => (
+            {tasks
+                .filter((e) => selection === 'all' || e.status === selection)
+                .map(({id, name, status}) => (
                 <TaskItem
                     key={id}
                     id={id}
