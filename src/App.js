@@ -1,20 +1,33 @@
 import './App.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-function* uuidGen() {
-  let id = 0;
 
-  while (true){
-    yield id;
-    id++;
+const loadFromLocalStorage = (key) => {
+  const data = localStorage.getItem(key);
+  if (data !== null){
+    return JSON.parse(data);
   }
+  return []
 }
 
-const uuid = uuidGen();
+const saveToLocalStorage = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data))
+}
+
+
+const uuidGen = () => Math.max(...(loadFromLocalStorage('tds').map(e => e.id)), 0) + 1;
 
 function App() {
   const [value, setValue] = useState('');
   const [tasks, setTask] = useState([]);
+
+  useEffect(() => {
+    setTask(loadFromLocalStorage('tds'))
+  }, []);
+
+  useEffect(() => {
+    saveToLocalStorage('tds', tasks)
+  }, [tasks])
 
   const handleChange = (event) => {
     setValue(event.target.value)
@@ -23,13 +36,14 @@ function App() {
   const handleKeyUp = (event) => {
     if (value !== ''){
       if (event.key === 'Enter'){
-        setTask([...tasks, {
+        const newTask = [...tasks, {
           name: value,
-          id: uuid.next().value,
+          id: uuidGen(),
           status: false
-        }])
-        // setTask([value, ...tasks]) //jesli chcemy na poczatku
+        }]
+        setTask(newTask);
         setValue('')
+        saveToLocalStorage('tds', newTask);
       }
     }
   }
