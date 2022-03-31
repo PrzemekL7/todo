@@ -1,0 +1,7 @@
+function ClearCompletedButton({handleDeleteDone}) {
+    return (
+        <button onClick={handleDeleteDone}>Clear Completed</button>
+    );
+}
+
+export default ClearCompletedButton;

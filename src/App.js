@@ -5,6 +5,9 @@ import uuidGen from "./utils/uuid";
 import Headline from "./components/Headline";
 import TaskInput from "./components/Taskinput";
 import TaskList from "./components/TaskList";
+import ItemsLeft from "./components/ItemsLeft";
+import SelectionButtons from "./components/SelectionButtons";
+import ClearCompletedButton from "./components/ClearCompletedButton";
 
 function App() {
     const [value, setValue] = useState('');
@@ -65,7 +68,7 @@ function App() {
                 handleChange={handleChange}
                 handleKeyUp={handleKeyUp}
             />
-            {tasks.length === 0 ? ('') : (
+            {tasks.length === 0 ? ('') : ((
                 <>
                     <TaskList
                         tasks={tasks}
@@ -74,19 +77,19 @@ function App() {
                         selection={selection}
                     />
                     {/*TODO move to separate component */}
-                    <p>{tasks.filter((e) => !e.status).length} items left</p>
+                    <ItemsLeft
+                        tasks={tasks}
+                    />
 
                     {/*TODO move to separate component */}
-                    <div>
-                        <button onClick={() => setSelection('all')}>All</button>
-                        <button onClick={() => setSelection(false)}>Active</button>
-                        <button onClick={() => setSelection(true)}>Completed</button>
-                    </div>
+                    <SelectionButtons
+                        setSelection={setSelection}
+                    />
 
                     {/*TODO move to separate component */}
                     {tasks.filter((e) => e.status).length > 0 ? (
                         <button onClick={handleDeleteDone}>Clear Completed</button>) : ('')}
-                </>)
+                </>))
             }
         </div>
     );
