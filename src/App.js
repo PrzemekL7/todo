@@ -10,7 +10,7 @@ import SelectionButtons from "./components/SelectionButtons";
 import ClearCompletedButton from "./components/ClearCompletedButton";
 import {firestore} from "./firebase";
 import {db} from "./firebase";
-import {collection, getDocs} from "firebase/firestore"
+import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch} from "firebase/firestore"
 
 function App() {
     const [value, setValue] = useState('');
@@ -26,7 +26,8 @@ function App() {
     }
 
     useEffect(() => {
-        getData()
+        getData().catch(() => {
+        });
     }, []);
 
     useEffect(() => {
@@ -41,37 +42,47 @@ function App() {
         setValue(event.target.value)
     }
 
-    const handleKeyUp = (event) => {
-        if (value !== '') {
-            if (event.key === 'Enter') {
-                const newTask = [...tasks, {
-                    name: value,
-                    id: uuidGen(),
-                    status: false
-                }]
-                setTask(newTask);
-                setValue('')
-                saveToLocalStorage('tds', newTask);
+    const handleKeyUp = async (event) => {
+        if (event.key === 'Enter') {
+
+            const newTodo = {
+                name: value,
+                status: false
             }
+
+            const docRef = await addDoc(collection(db, "todos"), newTodo);
+
+            setTask([Object.assign(newTodo, {id: docRef.id}), ...tasks]);
+            setValue('');
         }
     }
 
-    function handleChangeStatus(id) {
-        const newTasks = tasks.map(task => {
-            if (task.id === id) {
-                task.status = !task.status
-            }
-            return task
-        })
+    async function handleChangeStatus(id) {
+        const newTasks = tasks.filter(task => task.id === id)[0];
+        newTasks.status = !newTasks.status;
 
-        setTask(newTasks);
+        await updateDoc(doc(db, 'todos', id), {status: newTasks.status});
+
+
+        setTask([...tasks]);
     }
 
-    function handleDeleteTask(id) {
+    async function handleDeleteTask(id) {
+        await deleteDoc(doc(db, 'todos', id));
         setTask(tasks.filter(task => task.id !== id))
     }
 
-    function handleDeleteDone () {
+    async function handleDeleteDone() {
+        const batch = writeBatch(db);
+        tasks.forEach(task => {
+            if (task.status) {
+                const ref = doc(db, 'todos', task.id);
+                batch.delete(ref);
+            }
+        })
+
+        await batch.commit();
+
         setTask(tasks.filter(task => !task.status))
     }
 
