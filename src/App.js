@@ -8,11 +8,26 @@ import TaskList from "./components/TaskList";
 import ItemsLeft from "./components/ItemsLeft";
 import SelectionButtons from "./components/SelectionButtons";
 import ClearCompletedButton from "./components/ClearCompletedButton";
+import {firestore} from "./firebase";
+import {db} from "./firebase";
+import {collection, getDocs} from "firebase/firestore"
 
 function App() {
     const [value, setValue] = useState('');
     const [tasks, setTask] = useState([]);
     const [selection, setSelection] = useState('all');
+
+    const getData = async () => {
+        const querySnapshot = await getDocs(collection(db, "todos"));
+        setTask(querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+        })))
+    }
+
+    useEffect(() => {
+        getData()
+    }, []);
 
     useEffect(() => {
         setTask(loadFromLocalStorage('tds'))
