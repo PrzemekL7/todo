@@ -10,67 +10,24 @@ import SelectionButtons from "./components/SelectionButtons";
 import ClearCompletedButton from "./components/ClearCompletedButton";
 import {firestore} from "./firebase";
 import {db} from "./firebase";
-import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch} from "firebase/firestore"
+import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch, onSnapshot} from "firebase/firestore"
 
 function App() {
-    const [value, setValue] = useState('');
     const [tasks, setTask] = useState([]);
     const [selection, setSelection] = useState('all');
 
-    const getData = async () => {
-        const querySnapshot = await getDocs(collection(db, "todos"));
-        setTask(querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data()
-        })))
-    }
-
     useEffect(() => {
-        getData().catch(() => {
+        const unsubscribe = onSnapshot(collection(db, 'todos'), (snapshot) => {
+            setTask(snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })))
         });
-    }, []);
 
-    useEffect(() => {
-        setTask(loadFromLocalStorage('tds'))
-    }, []);
-
-    useEffect(() => {
-        saveToLocalStorage('tds', tasks)
-    }, [tasks])
-
-    const handleChange = (event) => {
-        setValue(event.target.value)
-    }
-
-    const handleKeyUp = async (event) => {
-        if (event.key === 'Enter') {
-
-            const newTodo = {
-                name: value,
-                status: false
-            }
-
-            const docRef = await addDoc(collection(db, "todos"), newTodo);
-
-            setTask([Object.assign(newTodo, {id: docRef.id}), ...tasks]);
-            setValue('');
+        return () => {
+            unsubscribe();
         }
-    }
-
-    async function handleChangeStatus(id) {
-        const newTasks = tasks.filter(task => task.id === id)[0];
-        newTasks.status = !newTasks.status;
-
-        await updateDoc(doc(db, 'todos', id), {status: newTasks.status});
-
-
-        setTask([...tasks]);
-    }
-
-    async function handleDeleteTask(id) {
-        await deleteDoc(doc(db, 'todos', id));
-        setTask(tasks.filter(task => task.id !== id))
-    }
+    }, []);
 
     async function handleDeleteDone() {
         const batch = writeBatch(db);
@@ -82,24 +39,16 @@ function App() {
         })
 
         await batch.commit();
-
-        setTask(tasks.filter(task => !task.status))
     }
 
     return (
         <div className="App">
             <Headline/>
-            <TaskInput
-                value={value}
-                handleChange={handleChange}
-                handleKeyUp={handleKeyUp}
-            />
+            <TaskInput/>
             {tasks.length === 0 ? ('') : ((
                 <>
                     <TaskList
                         tasks={tasks}
-                        handleChangeStatus={handleChangeStatus}
-                        handleDeleteTask={handleDeleteTask}
                         selection={selection}
                     />
                     {/*TODO move to separate component */}

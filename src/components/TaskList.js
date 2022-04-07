@@ -1,7 +1,7 @@
 import React from "react";
 import TaskItem from "./Taskitem";
 
-function TaskList({tasks, selection, handleChangeStatus, handleDeleteTask}) {
+function TaskList({tasks, selection}) {
     return (
         <ul>
             {tasks
@@ -12,8 +12,6 @@ function TaskList({tasks, selection, handleChangeStatus, handleDeleteTask}) {
                     id={id}
                     status={status}
                     name={name}
-                    handleDeleteTask={handleDeleteTask}
-                    handleChangeStatus={handleChangeStatus}
                 />))}
         </ul>
     );
