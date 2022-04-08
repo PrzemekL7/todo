@@ -25,6 +25,8 @@ function TaskInput() {
                value={value}
                onChange={handleChange}
                onKeyUp={handleKeyUp}
+               className="input"
+               placeholder="What needs to be done"
         />
     );
 }

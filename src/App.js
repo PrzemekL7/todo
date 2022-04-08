@@ -1,16 +1,13 @@
-import './App.css';
+import './App.scss';
 import {useEffect, useState} from "react";
-import {loadFromLocalStorage, saveToLocalStorage} from "./utils/localstorage";
-import uuidGen from "./utils/uuid";
 import Headline from "./components/Headline";
 import TaskInput from "./components/Taskinput";
 import TaskList from "./components/TaskList";
 import ItemsLeft from "./components/ItemsLeft";
 import SelectionButtons from "./components/SelectionButtons";
-import ClearCompletedButton from "./components/ClearCompletedButton";
-import {firestore} from "./firebase";
+
 import {db} from "./firebase";
-import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch, onSnapshot} from "firebase/firestore"
+import {collection, doc, writeBatch, onSnapshot} from "firebase/firestore"
 
 function App() {
     const [tasks, setTask] = useState([]);
@@ -44,6 +41,7 @@ function App() {
     return (
         <div className="App">
             <Headline/>
+            <div className="container">
             <TaskInput/>
             {tasks.length === 0 ? ('') : ((
                 <>
@@ -66,6 +64,7 @@ function App() {
                         <button onClick={handleDeleteDone}>Clear Completed</button>) : ('')}
                 </>))
             }
+            </div>
         </div>
     );
 }
