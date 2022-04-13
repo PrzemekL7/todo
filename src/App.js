@@ -42,28 +42,33 @@ function App() {
         <div className="App">
             <Headline/>
             <div className="container">
-            <TaskInput/>
-            {tasks.length === 0 ? ('') : ((
-                <>
-                    <TaskList
-                        tasks={tasks}
-                        selection={selection}
-                    />
-                    {/*TODO move to separate component */}
-                    <ItemsLeft
-                        tasks={tasks}
-                    />
+                <TaskInput/>
+                {tasks.length === 0 ? ('') : (
+                    <>
+                        <TaskList
+                            tasks={tasks}
+                            selection={selection}
+                        />
+                        <div className="utils">
+                            {/*TODO move to separate component */}
+                            <ItemsLeft
+                                tasks={tasks}
+                            />
 
-                    {/*TODO move to separate component */}
-                    <SelectionButtons
-                        setSelection={setSelection}
-                    />
+                            {/*TODO move to separate component */}
+                            <SelectionButtons
+                                setSelection={setSelection}
+                                selection={selection}
+                            />
 
-                    {/*TODO move to separate component */}
-                    {tasks.filter((e) => e.status).length > 0 ? (
-                        <button onClick={handleDeleteDone}>Clear Completed</button>) : ('')}
-                </>))
-            }
+                            {/*TODO move to separate component */}
+                            <div>
+                                {tasks.filter((e) => e.status).length > 0 ? (
+                                    <button onClick={handleDeleteDone}>Clear Completed</button>) : ('')}
+                            </div>
+                        </div>
+                    </>)
+                }
             </div>
         </div>
     );

@@ -17,7 +17,7 @@ function TaskItem({id, status, name}) {
                 className={status ? 'status done' : 'status active'}
                 onClick={handleChangeStatus}
             />
-            {name}
+            <span>{name}</span>
             <button onClick={handleDeleteTask}>x</button>
         </li>
     );

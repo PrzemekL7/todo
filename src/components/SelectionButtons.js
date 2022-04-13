@@ -1,9 +1,11 @@
-function SelectionButtons({setSelection}) {
+import app from "../App";
+
+function SelectionButtons({setSelection, selection}) {
     return (
         <div>
-            <button onClick={() => setSelection('all')}>All</button>
-            <button onClick={() => setSelection(false)}>Active</button>
-            <button onClick={() => setSelection(true)}>Completed</button>
+            <button onClick={() => setSelection('all')} className={selection === 'all' ? 'active' : ''}>All</button>
+            <button onClick={() => setSelection(false)} className={selection === false ? 'active' : ''}>Active</button>
+            <button onClick={() => setSelection(true)} className={selection === true ? 'active' : ''}>Completed</button>
         </div>
     );
 }
